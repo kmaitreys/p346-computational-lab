@@ -2,6 +2,9 @@
 ################################    A Library of Functions      ##################################
 
 ##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
 
 #simple function which displays a matrix
@@ -13,6 +16,9 @@ def matrixDisplay(M):
         print()
 
 
+##################################################################################################
+##################################################################################################
+##################################################################################################
 ##################################################################################################
 
 #matrix product
@@ -29,6 +35,9 @@ def matrixProduct(L, M):
                     P[i][j] = P[i][j] + (L[i][k] * M[k][j])
         matrixDisplay(P)
 
+##################################################################################################
+##################################################################################################
+##################################################################################################
 ##################################################################################################
 
 
@@ -63,6 +72,9 @@ def gaussj(a, b):
     print(b)
 
 #################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
 
 #calculation of determinant using gauss-jordan elimination
@@ -94,6 +106,9 @@ def determinant(a):
         print(d)
 
 #################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
 
 #calculating inverse
@@ -135,6 +150,9 @@ def inverse(a):
 
 
 #################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
 
 #defining a function for forward substituion
@@ -149,6 +167,9 @@ def fwdSub(L, b):
     return y
 
 #################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
 
 #defining a function for backward substitution
@@ -166,6 +187,9 @@ def bwdSub(U, y):
 
 
 #################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
 
 #defining doolittle algorithm
@@ -194,6 +218,9 @@ def dlittle(A):
     return (L, U)
 
 #################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
 
 #defining crout algorithm
@@ -218,6 +245,9 @@ def crout(A):
     return (L, U)
 
 #################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
 
 #defining a solver function
@@ -232,6 +262,9 @@ def solver(A, b, algo):
     return x
 
 #################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
 
 #defining the cholesky algorithm
@@ -255,6 +288,9 @@ def cholesky(a):
     return L
 
 #################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
 
 #defining the solver function for cholesky algorithm 
@@ -276,7 +312,11 @@ def choleskySolver(L, U, b):
         x[i] = (y[i]-sumj)/U[i][i]
     return x
 
-#################################################################################################    
+#################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
+     
 
 
 #defining a function to transpose the matrices
@@ -290,7 +330,11 @@ def transpose(a):
     return astar
 
 #################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
+#defining the LU decomposition function and related complementary functions for question 2
 
 def inverseLU(M,I): #function to call inverse using LU
     if M[1][1] == 0 and M[0][1] != 0:
@@ -301,6 +345,11 @@ def inverseLU(M,I): #function to call inverse using LU
     U = LUDecomp.U 
     return fwdBwdSub(L,U,I)
 
+
+##################################################################################################
+##################################################################################################
+
+
 def swapRows(Ab, old, new_r, cols):
     temp = []       #temp list to store old list
 
@@ -308,6 +357,11 @@ def swapRows(Ab, old, new_r, cols):
         temp.append(Ab[int(old)][c])
         Ab[int(old)][c] = Ab[int(new_r)][c]     #swapping values
         Ab[int(new_r)][c] = temp[c]
+
+
+##################################################################################################
+##################################################################################################
+
 
 def LUDecomp(M):
     PartialPivot(M, 0, len(M), len(M[0]))  #partial pivoting given matrix
@@ -358,6 +412,11 @@ def LUDecomp(M):
     LUDecomp.L = lower
     LUDecomp.U = upper
 
+
+##################################################################################################
+##################################################################################################
+
+
 def fwdBwdSub(L, U, b):
     y = [[0 for c in range(len(b[0]))] for r in range(len(b))]
     for i in range(len(b)):
@@ -387,6 +446,11 @@ def fwdBwdSub(L, U, b):
         print (i)
     return(x)
 
+
+##################################################################################################
+##################################################################################################
+
+
 def PartialPivot(Ab, m, rows, cols):
     global n,swapnumber          #global variable to store how many swap are done
     n = 0
@@ -404,12 +468,35 @@ def PartialPivot(Ab, m, rows, cols):
         print ("No unique solution")   #if pivot is 0 at end it returns no solution
         return None
 
+
+
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
+
+
+
+ 
+#following modules are required to execute some essential things asked in the question
 import matplotlib.pyplot as plt
 import math
 
+##################################################################################################
+##################################################################################################
+
+
+
+#defining the bracketing function for bisection method
+#this function also prints the plot and a table of f(x_i) vs x_i
+
+
 def rootBisec(y, a, b):
-    if y(a)*y(b)<0:
-        iterx, iterCount = bisection(y, a, b, 1.0e-5)
+
+    #this part of the code is to print the plot and the table
+
+    if y(a)*y(b)<0: #no need for bracketing
+        iterx, iterCount = bisection(y, a, b, 1.0e-5) #execute the bisection function. the tolerance e is defined as 1e-05 as asked in the question
         x1 = iterx
         y1 = iterCount
 
@@ -421,20 +508,47 @@ def rootBisec(y, a, b):
         for i in range(len(x1)):
             print(x1[i], end=" ")
             print(y1[i])
-    else:
+    
+    #this part of the code executes the bracketing algorithm 
+
+    else: #executing bracketing with beta = 1.1
         if abs(y(a))<abs(y(b)):
             a = a - 1.1*(b-a)
-            rootBisec(y, a, b)
+            rootBisec(y, a, b) #call rootBisec again and this process continues until the bracketing is complete
         if abs(y(a))>abs(y(b)):
             b = b + 1.1*(b-a)
-            rootBisec(y, a, b)
+            rootBisec(y, a, b) #call rootBisec again and this process continues until the bracketing is complete
 
-def bisection(f, a, b, e):
-    i = 0
-    x = 1
-    iterCount = []
-    iterx = []
+#note that this code is not domain sensitive. it will work with most functions but with
+#functions like the natural logarithm which have very strict domain of definitions, the
+#input values while performing bracketing will quickly go out of domain, resulting in a
+#math domain error from Python3. so kindly choose your guesses with great deliberation.
+
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
+
+
+#the actual function which executes (or finds the root) via the bisection method
+
+
+def bisection(f, a, b, e): #f is the function, a and b represent the interval and e is the tolerance
+    i = 0 #this is defined so as to make it easy to construct the table later
+    x = 1 #a dummy value for the initial value of root
+    iterCount = [] #a list which stores the f(x_i)'s
+    iterx = [] #a list which stores the x_i's
+
+    #the main code
+
     condition = True
+
+    #there are two conditions of the code related to the position of the initial guesses and the nature of curve
+    #the code will change slightly for whether the function is increasing or decreasing in the chosen interval
+    #these if statements take care of that
+
+    #if function is increasing in chosen interval
+
     if f(a)<f(b):
         while condition:
             g = f(x)
@@ -447,6 +561,9 @@ def bisection(f, a, b, e):
             i = i + 1
             iterx.append(i)
             condition = abs(f(x)-g)>e
+    
+    #if function is decreasing in chosen interval
+
     if f(a)>f(b):
         while condition:
             g = f(x)
@@ -460,14 +577,26 @@ def bisection(f, a, b, e):
             i = i + 1
             iterx.append(i)
             condition = abs(f(x)-g)>e       
-    print("Required root is: ", x)
-    return iterx, iterCount
+    print("Required root is: ", x) #printing the root
+    return iterx, iterCount #return the values for plotting and tabulating purposes
 
 
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
-def regfalsi(f,a,b,e,n):
-    xh = 0
-    iterCount = []
+
+#the code for the Regula Falsi or false position method
+
+
+def regfalsi(f,a,b,e,n): #f is the function, a and be represent the interval, e is the tolerance and 
+                         #n is an upper limit on the number of iterations
+    xh = 0 #initial dummy value for the root
+    iterCount = [] #a list which stores the f(x_i)'s
+
+    #the main code starts here
+
     for fal in range(1,n+1):
         xh = b - (b-a)/(f(b)-f(a))*f(b)
         iterCount.append(f(xh))
@@ -476,13 +605,27 @@ def regfalsi(f,a,b,e,n):
             b = xh
         else:
             a = xh
-    print("Required root is: ", xh)
-    return iterCount
+    print("Required root is: ", xh) #printing the root
+    return iterCount #return the values for plotting and tabulating purposes
+
+
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
+
+
+#this code is analogous to rootBisec. plots and tabulate the asked details as well
 
 
 def rootRegFalsi(y, a, b):
-    if y(a)*y(b)<0:
-        iterCount = regfalsi(y, a, b, 1.0e-5, 100)
+
+    #this part of the code is to print the plot and the table
+
+    if y(a)*y(b)<0: #no bracketing needed
+        iterCount = regfalsi(y, a, b, 1.0e-5, 100) #y is function, a and b represent the interval. 
+                                                   #e is the tolerance (value specified according to the question)
+                                                   #maximum iterations are taken to be 100
         x2 = list(range(1, len(iterCount)+1))
         y2 = iterCount
         plt.plot(x2, y2)
@@ -492,24 +635,43 @@ def rootRegFalsi(y, a, b):
         for i in range(len(x2)):
             print(x2[i], end=" ")
             print(y2[i])
-        
+
+    #this part of the code executes the bracketing algorithm
+    
     else:
-        if abs(y(a))<abs(y(b)):
-            a = a - 1.1*(b-a)
-            rootRegFalsi(y, a, b)
+        if abs(y(a))<abs(y(b)): 
+            a = a - 1.1*(b-a) #executing bracketing with beta = 1.1
+            rootRegFalsi(y, a, b) #call rootBisec again and this process continues until the bracketing is complete
         if abs(y(a))>abs(y(b)):
             b = b + 1.1*(b-a)
-            rootRegFalsi(y, a, b)
+            rootRegFalsi(y, a, b) #call rootBisec again and this process continues until the bracketing is complete
 
 
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
-def newRaph(f, df, x0, e, n):
-    iterCount = [f(x0)]
+
+#the code for Newton-Raphson method to find roots
+
+def newRaph(f, df, x0, e, n): #f is the function, df is the first derivative of the function
+                              #x0 is the dummy valriable for root
+                              #e is the tolerance (taken as 1.0e-5 as required in the question)
+                              #n is the maximum iterations 
+    iterCount = [f(x0)] #this enlists the f(x_i)'s for plotting and tabulating purposes
+
+    #the main algorith for Newton-Rhapson here
+
     for i in range(n):
         xnew = x0 - f(x0)/df(x0)
         iterCount.append(f(xnew))
         if abs(xnew - x0)<e: break
         x0 = xnew
+    
+    #the code for plotting and tabulating
+
+
     x3 = list(range(1, len(iterCount)+1))
     y3 = iterCount
     plt.plot(x3, y3)
@@ -519,8 +681,23 @@ def newRaph(f, df, x0, e, n):
     for i in range(len(x3)):
         print(x3[i], end=" ")
         print(y3[i])
-    return xnew, i
+    return xnew, i #returns the value for printing the results later
 
+
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
+
+
+#this is a code to evaluate the co-efficients of the differentials of the polynomial
+#the format in which polynomial p must be used is written below
+
+
+#p,dp,ddp = evalPoly(a,x).
+#p = a[0] + a[1]*x + a[2]*xˆ2 +...+ a[n]*xˆn
+#with its derivatives dp = p’ and ddp = p’’
+#at x.
 
 
 def evalPoly(a, x):
@@ -534,13 +711,30 @@ def evalPoly(a, x):
         p = p*x + a[n-i]
     return p, dp, ddp
 
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
 
-def polyRoots(guess, a, tol=1.0e-12):
+
+
+#this is the main algorithm code for Laguerre's method
+
+#roots = polyRoots(a).
+#again the format of the polynomial should be: a[0] + a[1]*x + a[2]*xˆ2 +...+ a[n]*xˆn = 0.
+#The roots are returned in the array ’roots’
+
+def polyRoots(guess, a, tol=1.0e-12): #guess is the input from the user 
+                                      #a is the list which contains the co-efficients of polynomial p
+                                      #tol is tolerance, taken to be 1.0e-12 (arbitrarily)
+    
+    #main code for Laguerre's method begins here
+
     def laguerre(a, tol):
-        x = guess
+        x = guess #starting value is used as an input from the user
         n = len(a) - 1
         for i in range(30):
-            p, dp, ddp = evalPoly(a,x)
+            p, dp, ddp = evalPoly(a,x) #calling the evalPoly to generate p, dp and ddp
             if abs(p) < tol: return x
             g = dp/p
             h = g*g - ddp/p
@@ -549,7 +743,10 @@ def polyRoots(guess, a, tol=1.0e-12):
             else: dx = n/(g-f)
             x = x - dx
             if abs(dx) < tol: return x
-        print("Too many iterations")
+        print("Too many iterations") #exception in case of the guess is not enough to find the roots
+
+    #the following code is to deflate the polynomial using the synthetic division method
+
     def deflPoly(a, root):
         n = len(a) - 1
         b = [0.0]*n
@@ -557,6 +754,9 @@ def polyRoots(guess, a, tol=1.0e-12):
         for i in range(n-2, -1, -1):
             b[i] = a[i+1] + root*b[i+1]
         return b
+
+    #this final part of function returns the necessary roots neatly in a list
+
     n = len(a) - 1
     roots = [0.0 for i in range(n)]
     for i in range(n):
@@ -564,3 +764,9 @@ def polyRoots(guess, a, tol=1.0e-12):
         roots[i] = x
         a = deflPoly(a, x)
     return roots
+
+
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
