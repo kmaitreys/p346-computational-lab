@@ -496,18 +496,18 @@ def rootBisec(y, a, b):
     #this part of the code is to print the plot and the table
 
     if y(a)*y(b)<0: #no need for bracketing
-        iterx, iterCount = bisection(y, a, b, 1.0e-5) #execute the bisection function. the tolerance e is defined as 1e-05 as asked in the question
+        iterx, iterCount, xiCount = bisection(y, a, b, 1.0e-5) #execute the bisection function. the tolerance e is defined as 1e-05 as asked in the question
         x1 = iterx
         y1 = iterCount
-
+        y11 = xiCount
         plt.plot(x1, y1)
         plt.show()
 
-        print("x_i", end=" ")
-        print("f(x_i)")
+        print("i", end=" ")
+        print("x_i")
         for i in range(len(x1)):
             print(x1[i], end=" ")
-            print(y1[i])
+            print(y11[i])
     
     #this part of the code executes the bracketing algorithm 
 
@@ -537,6 +537,7 @@ def bisection(f, a, b, e): #f is the function, a and b represent the interval an
     i = 0 #this is defined so as to make it easy to construct the table later
     x = 1 #a dummy value for the initial value of root
     iterCount = [] #a list which stores the f(x_i)'s
+    xiCount = []
     iterx = [] #a list which stores the x_i's
 
     #the main code
@@ -558,6 +559,7 @@ def bisection(f, a, b, e): #f is the function, a and b represent the interval an
             else:
                 b = x
             iterCount.append(f(x))
+            xiCount.append(x)
             i = i + 1
             iterx.append(i)
             condition = abs(f(x)-g)>e
@@ -573,12 +575,12 @@ def bisection(f, a, b, e): #f is the function, a and b represent the interval an
             else:
                 a = x
             iterCount.append(f(x))
-        
+            xiCount.append(x)
             i = i + 1
             iterx.append(i)
             condition = abs(f(x)-g)>e       
     print("Required root is: ", x) #printing the root
-    return iterx, iterCount #return the values for plotting and tabulating purposes
+    return iterx, iterCount, xiCount #return the values for plotting and tabulating purposes
 
 
 ##################################################################################################
@@ -594,19 +596,21 @@ def regfalsi(f,a,b,e,n): #f is the function, a and be represent the interval, e 
                          #n is an upper limit on the number of iterations
     xh = 0 #initial dummy value for the root
     iterCount = [] #a list which stores the f(x_i)'s
+    xiCount = []
 
     #the main code starts here
 
     for fal in range(1,n+1):
         xh = b - (b-a)/(f(b)-f(a))*f(b)
         iterCount.append(f(xh))
+        xiCount.append(xh)
         if abs(f(xh)) < e: break
         elif f(a)*f(xh)<0:
             b = xh
         else:
             a = xh
     print("Required root is: ", xh) #printing the root
-    return iterCount #return the values for plotting and tabulating purposes
+    return iterCount, xiCount #return the values for plotting and tabulating purposes
 
 
 ##################################################################################################
@@ -623,18 +627,19 @@ def rootRegFalsi(y, a, b):
     #this part of the code is to print the plot and the table
 
     if y(a)*y(b)<0: #no bracketing needed
-        iterCount = regfalsi(y, a, b, 1.0e-5, 100) #y is function, a and b represent the interval. 
+        iterCount, xiCount = regfalsi(y, a, b, 1.0e-5, 100) #y is function, a and b represent the interval. 
                                                    #e is the tolerance (value specified according to the question)
                                                    #maximum iterations are taken to be 100
         x2 = list(range(1, len(iterCount)+1))
         y2 = iterCount
+        y22 = xiCount
         plt.plot(x2, y2)
         plt.show()
         print("x_i", end=" ")
         print("f(x_i)")
         for i in range(len(x2)):
             print(x2[i], end=" ")
-            print(y2[i])
+            print(y22[i])
 
     #this part of the code executes the bracketing algorithm
     
@@ -660,12 +665,14 @@ def newRaph(f, df, x0, e, n): #f is the function, df is the first derivative of 
                               #e is the tolerance (taken as 1.0e-5 as required in the question)
                               #n is the maximum iterations 
     iterCount = [f(x0)] #this enlists the f(x_i)'s for plotting and tabulating purposes
+    xiCount = []
 
     #the main algorith for Newton-Rhapson here
 
     for i in range(n):
         xnew = x0 - f(x0)/df(x0)
         iterCount.append(f(xnew))
+        xiCount.append(xnew)
         if abs(xnew - x0)<e: break
         x0 = xnew
     
@@ -674,13 +681,14 @@ def newRaph(f, df, x0, e, n): #f is the function, df is the first derivative of 
 
     x3 = list(range(1, len(iterCount)+1))
     y3 = iterCount
+    y33 = xiCount
     plt.plot(x3, y3)
     plt.show()
     print("x_i", end=" ")
     print("f(x_i)")
-    for i in range(len(x3)):
+    for i in range(len(x3)-1):
         print(x3[i], end=" ")
-        print(y3[i])
+        print(y33[i])
     return xnew, i #returns the value for printing the results later
 
 
