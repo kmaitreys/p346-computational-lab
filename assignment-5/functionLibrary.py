@@ -635,8 +635,8 @@ def rootRegFalsi(y, a, b):
         y22 = xiCount
         plt.plot(x2, y2)
         plt.show()
-        print("x_i", end=" ")
-        print("f(x_i)")
+        print("i", end=" ")
+        print("x_i")
         for i in range(len(x2)):
             print(x2[i], end=" ")
             print(y22[i])
@@ -684,8 +684,8 @@ def newRaph(f, df, x0, e, n): #f is the function, df is the first derivative of 
     y33 = xiCount
     plt.plot(x3, y3)
     plt.show()
-    print("x_i", end=" ")
-    print("f(x_i)")
+    print("i", end=" ")
+    print("x_i")
     for i in range(len(x3)-1):
         print(x3[i], end=" ")
         print(y33[i])
