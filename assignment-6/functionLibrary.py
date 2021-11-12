@@ -780,7 +780,9 @@ def polyRoots(guess, a, tol=1.0e-12): #guess is the input from the user
 ##################################################################################################
 
 
-def midpoint(a, b, N, y):
+def midpoint(a, b, N, y): #a is the lower limit, b is the upper limit
+                          #N is the number of divisions made in the limit
+                          #y is the mathematical function to be integrated   
     h = (b-a)/N
     mids = []
     for i in range(1, N+1):
@@ -797,7 +799,9 @@ def midpoint(a, b, N, y):
 ##################################################################################################
 
 
-def trapezoidal(a, b, N, y):
+def trapezoidal(a, b, N, y): #a is the lower limit, b is the upper limit
+                             #N is the number of divisions made in the limit
+                             #y is the mathematical function to be integrated
     h = (b-a)/N
     ends = []
     for i in range(N+1):
@@ -814,9 +818,18 @@ def trapezoidal(a, b, N, y):
 ##################################################################################################
 
 
-def simpson(a, b, N, y):
+def simpson(a, b, N, y):#a is the lower limit, b is the upper limit
+                        #N is the number of divisions made in the limit
+                        #y is the mathematical function to be integrated
+    
+    #check if N is even or not, convert to even if N odd
+
     if (N % 2) != 0:
         N = N + 1
+
+    #simpson algorithm starts here
+
+
     h = (b-a)/N
     ends = []
     for i in range(N+1):
@@ -826,6 +839,48 @@ def simpson(a, b, N, y):
         S.append((h/3)*(y(ends[j])+(4*y(ends[j+1]))+y(ends[j+2])))
     simp = sum(S)
     return simp
+
+
+##################################################################################################
+##################################################################################################
+##################################################################################################
+##################################################################################################
+
+
+##################################################################################################
+
+import random
+
+##################################################################################################
+
+def monteCarlo(a, b, N, s, iter, y): #a and b are the limits of the integration
+                                     #N is the number of the divisions made within the limits
+                                     #s is the step-size of increasing N
+                                     #iter is the number of times N will be increased
+                                     #y is the mathematical function to be integrated
+
+    Flist = []
+    xlist = list(range(N, iter*s, s))
+    while N < (iter*s):
+        vars = []
+        for i in range(N):
+            vars.append(random.uniform(a, b))
+        f = []
+        f2 = []
+        for j in range(len(vars)):
+            f.append(y(vars[j]))
+        for j in range(len(vars)):
+            f2.append((y(vars[j]))**2)
+        sumf = sum(f)
+        sumf2 = sum(f2)
+        F = ((b-a)/N)*sumf
+        Flist.append(F)
+        sigmaf = math.sqrt((1/N)*sumf2 - ((1/N)*sumf)**2)
+        N = N + s
+    plt.plot(xlist, Flist)
+    plt.ylabel("\u03C0")
+    plt.xlabel("N")
+    plt.show
 
 
 ##################################################################################################
