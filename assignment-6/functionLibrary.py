@@ -856,16 +856,12 @@ import random
 
 ##################################################################################################
 
-<<<<<<< HEAD
 def monteCarlo(a, b, N, s, iter, y): #a and b are the limits of the integration
                                      #N is the number of the divisions made within the limits
                                      #s is the step-size of increasing N
                                      #iter is the number of times N will be increased
                                      #y is the mathematical function to be integrated
 
-=======
-def monteCarlo(a, b, N, s, iter, y):
->>>>>>> c6eeebd689ba4093dc42c20ee786c9c2b882205e
     Flist = []
     xlist = list(range(N, iter*s, s))
     while N < (iter*s):
@@ -885,11 +881,8 @@ def monteCarlo(a, b, N, s, iter, y):
         sigmaf = math.sqrt((1/N)*sumf2 - ((1/N)*sumf)**2)
         N = N + s
     plt.plot(xlist, Flist)
-<<<<<<< HEAD
     plt.ylabel("\u03C0")
     plt.xlabel("N")
-=======
->>>>>>> c6eeebd689ba4093dc42c20ee786c9c2b882205e
     plt.show
 
 
