@@ -879,7 +879,7 @@ def monteCarlo(a, b, N, s, iter, y): #a and b are the limits of the integration
     plt.plot(xlist, Flist)
     plt.ylabel("\u03C0")
     plt.xlabel("N")
-    plt.show
+    plt.show()
 
 
 ##################################################################################################
