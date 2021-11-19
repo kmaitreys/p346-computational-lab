@@ -891,7 +891,7 @@ def monteCarlo(a, b, N, s, iter, y): #a and b are the limits of the integration
 
 def fwdEuler(f, a, b, h, initial):
     t = []
-    for i in range(math.ceil(b/h)+1):
+    for i in range(math.ceil((b-a)/h)+1):
         t.append(a)
         a = a + h
     s = []
