@@ -889,7 +889,32 @@ def monteCarlo(a, b, N, s, iter, y): #a and b are the limits of the integration
 
 
 
-def fwdEuler(f, a, b, h):
+def fwdEuler(f, a, b, h, initial):
+    t = []
+    for i in range(math.ceil(b/h)+1):
+        t.append(a)
+        a = a + h
+    s = []
+    for i in range(len(t)):
+        s.append(0)
+    s[0] = initial
+    for i in range(0, len(t) - 1):
+        s[i + 1] = s[i] + h*f(t[i], s[i])
+    return t, s
+
+
+def eulerRaphson(f, df, x0, e, n):
+    iterCount = [f(x0)] #this enlists the f(x_i)'s for plotting and tabulating purposes
+    xiCount = []
+    for i in range(n):
+        xnew = x0 - f(x0)/df(x0)
+        iterCount.append(f(xnew))
+        xiCount.append(xnew)
+        if abs(xnew - x0)<e: break
+        x0 = xnew
+    return xnew
+
+def bwdEuler(f, a, b, h):
     t = []
     for i in range(math.ceil(b/h)+1):
         t.append(a)
@@ -902,5 +927,3 @@ def fwdEuler(f, a, b, h):
     for i in range(0, len(t) - 1):
         s[i + 1] = s[i] + h*f(t[i], s[i])
     return t, s
-
-
