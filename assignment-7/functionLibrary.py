@@ -903,12 +903,12 @@ def fwdEuler(f, a, b, h, initial):
     return t, s
 
 
-def eulerRaphson(f, df, x0, e, n):
-    iterCount = [f(x0)] #this enlists the f(x_i)'s for plotting and tabulating purposes
+def eulerRaphson(g, dg, x0, e, n):
+    iterCount = [g(x0)] #this enlists the f(x_i)'s for plotting and tabulating purposes
     xiCount = []
     for i in range(n):
-        xnew = x0 - f(x0)/df(x0)
-        iterCount.append(f(xnew))
+        xnew = x0 - g(x0)/dg(x0)
+        iterCount.append(g(xnew))
         xiCount.append(xnew)
         if abs(xnew - x0)<e: break
         x0 = xnew
