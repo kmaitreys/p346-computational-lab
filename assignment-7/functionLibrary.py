@@ -940,3 +940,20 @@ def func(y_new, y_old, x_new, h):
 def dfuncdx(y_new, x_new, h):
     """ The derivative of f(x) with respect to y_new."""
     return 1-(h/x_new)*(1+math.log(y_new))
+
+
+def predCorr(f, a, b, h, initial):
+    t = []
+    for i in range(math.ceil((b-a)/h)+1):
+        t.append(a)
+        a = a + h
+    s = []
+    for i in range(len(t)):
+        s.append(0)
+    s[0] = initial
+    for i in range(0, len(t)-1):
+        k_1 = h*f(s[i], t[i])
+        y_pred = k_1 + s[i]
+        k_2 = h*(f(y_pred, t[i + 1]))
+        s[i + 1] = s[i] + ((k_1 + k_2)/2)
+    return t, s
