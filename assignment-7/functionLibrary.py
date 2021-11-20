@@ -903,27 +903,40 @@ def fwdEuler(f, a, b, h, initial):
     return t, s
 
 
-def eulerRaphson(g, dg, x0, e, n):
-    iterCount = [g(x0)] #this enlists the f(x_i)'s for plotting and tabulating purposes
-    xiCount = []
-    for i in range(n):
-        xnew = x0 - g(x0)/dg(x0)
-        iterCount.append(g(xnew))
-        xiCount.append(xnew)
-        if abs(xnew - x0)<e: break
-        x0 = xnew
-    return xnew
-
-def bwdEuler(f, a, b, h):
+def bwdEuler(a, b, h, initial):
     t = []
-    for i in range(math.ceil(b/h)+1):
+    for i in range(math.ceil((b-a)/h)+1):
         t.append(a)
         a = a + h
-    initial = 2.71828
     s = []
     for i in range(len(t)):
         s.append(0)
     s[0] = initial
-    for i in range(0, len(t) - 1):
-        s[i + 1] = s[i] + h*f(t[i], s[i])
+    for n in range(len(t)-1):
+        s[n+1] = euler_NwtRaph(s[n], t[n+1], h)
     return t, s
+
+
+def euler_NwtRaph(y_old, x_new, h, tol=1e-12):
+    """ Takes values y_old and x_new, and finds the root of the
+    function f(y_new), returning y_new. """
+    
+    # initial guess:
+    y_new = y_old
+    f = func(y_new, y_old, x_new, h)
+    dfdx = dfuncdx(y_new, x_new, h)
+    
+    while abs(f/dfdx) > tol:
+        y_new = y_new - f/dfdx
+        f = func(y_new, y_old, x_new, h)
+        dfdx = dfuncdx(y_new, x_new, h)
+        
+    return y_new
+  
+def func(y_new, y_old, x_new, h):
+    """ The function f(x) we want the root of."""
+    return y_new - y_old - h*((y_new*math.log(y_new))/x_new)
+
+def dfuncdx(y_new, x_new, h):
+    """ The derivative of f(x) with respect to y_new."""
+    return 1-(h/x_new)*(1+math.log(y_new))
