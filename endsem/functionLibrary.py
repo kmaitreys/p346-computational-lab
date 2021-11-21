@@ -995,3 +995,127 @@ def Avg(R): #to find the average of a given list
     for i in range(n):
         r += (R[i])
     return (r / n)
+
+
+
+def linear_fitting(X,Y):
+
+    if len(X)!=len(Y):
+        print("no. of points in X do not match with that in Y")
+    else:
+        n=len(X)
+        #following values will be needed to determine slope, intercept of best fit line
+        xmean=sum(X)/len(X)
+        ymean=sum(Y)/len(Y)
+        #initially setting all values below this as 0
+        S_xx = 0
+        S_yy = 0
+        S_xy = 0
+        std_X = 0
+        std_Y = 0
+        for i in range(n):
+            S_xx = S_xx + (X[i])**2-xmean**2
+            S_yy = S_yy + Y[i]**2-ymean**2
+            S_xy += (X[i]*Y[i])-(xmean*ymean)
+            std_X += ((X[i]-xmean)**2)/n
+            std_Y += ((Y[i]-xmean)**2)/n
+        m=S_xy/S_xx
+        c=ymean-m*xmean
+        sigma_x = math.sqrt(std_X)
+        sigma_y = math.sqrt(std_Y)
+        PearsonR=S_xy/(math.sqrt(S_xx)*math.sqrt(S_yy))
+        return m,c,PearsonR
+
+
+def runge_kutta(d2ydx2, dydx, x0, y0, z0, xf, step_size): 
+    """ Yields solution from x=x0 to x=xf
+    y(x0) = y0 & y'(x0) = z0
+    z = dy/dx
+    """
+    x = []
+    y = []
+    z = []      # dy/dx
+    x.append(x0)
+    y.append(y0)
+    z.append(z0)
+
+    n = int((xf-x0)/step_size)      # no. of steps
+    for i in range(n):
+        x.append(x[i] + step_size)
+        k1 = step_size * dydx(x[i], y[i], z[i])
+        l1 = step_size * d2ydx2(x[i], y[i], z[i])
+        k2 = step_size * dydx(x[i] + step_size/2, y[i] + k1/2, z[i] + l1/2)
+        l2 = step_size * d2ydx2(x[i] + step_size/2, y[i] + k1/2, z[i] + l1/2)
+        k3 = step_size * dydx(x[i] + step_size/2, y[i] + k2/2, z[i] + l2/2)
+        l3 = step_size * d2ydx2(x[i] + step_size/2, y[i] + k2/2, z[i] + l2/2)
+        k4 = step_size * dydx(x[i] + step_size, y[i] + k3, z[i] + l3)
+        l4 = step_size * d2ydx2(x[i] + step_size, y[i] + k3, z[i] + l3)
+
+        y.append(y[i] + (k1 + 2*k2 + 2*k3 + k4)/6)
+        z.append(z[i] + (l1 + 2*l2 + 2*l3 + l4)/6)
+
+    return x, y, z
+
+
+
+def lagrange_interpolation(zeta_h, zeta_l, yh, yl, y):
+    zeta = zeta_l + (zeta_h - zeta_l) * (y - yl)/(yh - yl)
+    return zeta
+
+
+def shooting_method(d2ydx2, dydx, x0, y0, xf, yf, z_guess1, z_guess2, step_size, tol=1e-6):
+    '''x0: Lower boundary value of x
+    y0 = y(x0)
+    xf: Upper boundary value of x
+    yf = y(xf)
+    z = dy/dx
+    '''
+    x, y, z = runge_kutta(d2ydx2, dydx, x0, y0, z_guess1, xf, step_size)
+    yn = y[-1]
+
+    if abs(yn - yf) > tol:
+        if yn < yf:
+            zeta_l = z_guess1
+            yl = yn
+
+            x, y, z = runge_kutta(d2ydx2, dydx, x0, y0, z_guess2, xf, step_size)
+            yn = y[-1]
+
+            if yn > yf:
+                zeta_h = z_guess2
+                yh = yn
+
+                # calculate zeta using Lagrange interpolation
+                zeta = lagrange_interpolation(zeta_h, zeta_l, yh, yl, yf)
+
+                # using this zeta to solve using RK4
+                x, y, z = runge_kutta(d2ydx2, dydx, x0, y0, zeta, xf, step_size)
+                return x, y, z
+
+            else:
+                print("Bracketing FAIL! Try another set of guesses.")
+
+
+        elif yn > yf:
+            zeta_h = z_guess1
+            yh = yn
+
+            x, y, z = runge_kutta(d2ydx2, dydx, x0, y0, z_guess2, xf, step_size)
+            yn = y[-1]
+
+            if yn < yf:
+                zeta_l = z_guess2
+                yl = yn
+
+                # calculate zeta using Lagrange interpolation
+                zeta = lagrange_interpolation(zeta_h, zeta_l, yh, yl, yf)
+
+                x, y, z = runge_kutta(d2ydx2, dydx, x0, y0, zeta, xf, step_size)
+                return x, y, z
+
+            else:
+                print("Bracketing FAIL! Try another set of guesses.")
+
+
+    else:
+        return x, y, z         # bang-on solution with z_guess1
