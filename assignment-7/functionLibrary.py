@@ -957,3 +957,35 @@ def predCorr(f, a, b, h, initial):
         k_2 = h*(f(y_pred, t[i + 1]))
         s[i + 1] = s[i] + ((k_1 + k_2)/2)
     return t, s
+
+
+
+def rk4_secondOrder(F1, F2, a, b, h, y, u):
+    xpoints = []
+    ypoints = []
+    upoints = []
+    for i in range(math.ceil((b-a)/h)):
+        xpoints.append(a)
+        a = a + h
+    for x in xpoints:
+        ypoints.append(y)
+        upoints.append(u)
+
+        m1 = h*F1(y, u, x)
+        k1 = h*F2(y, u, x)  #(x, v, t)
+
+        m2 = h*F1(y+0.5*m1, u+0.5*k1, x+0.5*h)
+        k2 = h*F2(y+0.5*m1, u+0.5*k1, x+0.5*h)
+
+        m3 = h*F1(y+0.5*m2, u+0.5*k2, x+0.5*h)
+        k3 = h*F2(y+0.5*m2, u+0.5*k2, x+0.5*h)
+
+        m4 = h*F1(y+m3, u+k3, x+h)
+        k4 = h*F2(y+m3, u+k3, x+h)
+
+        y += (m1 + 2*m2 + 2*m3 + m4)/6
+        u += (k1 + 2*k2 + 2*k3 + k4)/6
+
+    return xpoints, ypoints
+
+
