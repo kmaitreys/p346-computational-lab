@@ -1,0 +1,202 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{braket}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{physics}
+\usepackage{float}
+\usepackage{array}
+\usepackage[super]{nth}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{gensymb}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[colorlinks,bookmarks=false,citecolor=blue,linkcolor=blue,urlcolor=blue]{hyperref}
+\usepackage[margin=2.5cm]{geometry}
+
+\title{\textbf{Adaptive step-size} \\ \textbf{Runge-Kutta Methods}}
+
+\author{Maitrey Sharma}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Introduction}
+Before getting into the limitations of the Runge-Kutta methods, we need to understand the concepts of stability and stiffness while dealing with ODEs. \textit{Stability} is concerned with the accumulation of local errors (the error caused by one iteration) while doing numerical integration. If the method is unstable, the global error (that is, the error)
+
+While working with algorithms to solve ODEs, the choice of the step-size $h$ is important as if it is too large, the truncation error may be unacceptable and if it is too small, we are expending unnecessary computer memory. Moreover, a constant step-size may
+not be appropriate for the entire range of integration. For example, if the solution curve starts off with rapid changes before becoming smooth we should use a small h at the beginning and increase it as we reach the smooth region. Therefore we need to develop adaptive methods which estimate the truncation error at each integration step and automatically adjust the step size to keep the error within prescribed limits.
+
+\section{Formulation}
+The adaptive Runge-Kutta methods use so-called embedded integration formulas. These formulas come in pairs: One formula has the integration order $m$, and the other one is of order $m+1$. The idea is to use both formulas to advance the solution from $x$ to $x+h$. Denoting the results by $y_m(x+h)$ and $y_{m+1}(x+h)$, an estimate of the truncation error in the formula of order $m$ is obtained from
+\begin{equation}
+\label{eq7.17}
+    E(h) = y_{m+1}(x+h) - y_m(x+h)
+\end{equation}
+Here are Runge-Kutta formulae of order five:
+\begin{equation}
+\label{eq7.18}
+    \begin{split}
+        K_0
+        &= h F(x, y) \\
+        K_i
+        &= h F \Bigg( x+A_ih, y + \sum_{j = 0}^{i-1} B_{ij} K_j \Bigg), i = 1, 2, \ldots, 6
+    \end{split}
+\end{equation}
+\begin{equation}
+\label{eq7.19a}
+    y_5 (x+h) = y(x) + \sum_{i=0}^6 C_i K_i
+\end{equation}
+The embedded fourth-order formula is
+\begin{equation}
+    y_4 (x+h) = y(x) + \sum_{i=0}^6 D_i K_i
+\end{equation}
+The coefficients appearing in these formulas proposed by Dormand and Prince are given in table (\ref{tab:coeff}). Using (\ref{eq7.17}), we have
+\begin{equation}
+    E(h) = y_5 (x+h) - y_4 (x+h) = \sum_{i=0}^6 (C_i - D_i)K_i
+\end{equation}
+To control the error measure $e(h)$ in the $E(h)$, out of the many approaches is to equate to the root-mean-square error in $E(h)$, so
+\begin{equation}
+    e(h) = \Bar{E}(h) = \sqrt{\dfrac{1}{n} \sum_{i=0}^{n-1} E_i^2 (h)}
+\end{equation}
+Error control is achieved by adjusting the increment $h$ so that the per-step error $e(h)$ is approximately equal to a prescribed tolerance $\varepsilon$. Noting that the truncation error in the fourth-order formula is $\mathcal{O} (h^5)$, we conclude that
+\begin{equation}
+\label{eq7.23}
+    \dfrac{e(h_1)}{e(h_2)} \approx \Big( \dfrac{h_1}{h_2} \Big)
+\end{equation}
+Let us suppose that we performed an integration step with $h_1$ that resulted in the
+error $e(h_1)$. The step size $h_2$ that we should have used can now be obtained from (\ref{eq7.23}) by setting $e(h_2) = \varepsilon$:
+\begin{equation}
+\label{eq7.234}
+    h_2 = h_1 \Bigg[ \dfrac{\varepsilon}{e(h_1)} \Bigg]^{1/5}
+\end{equation}
+If $h_2 \geq h_1$ we could repeat the integration step with $h_2$, but as the error was
+below the tolerance, we can accept current step and try $h_2$ in the next step. However, if $h_2 > h_1$, we must scrap the current step and repeat it with $h_2$.
+\par
+The equation (\ref{eq7.234}) can be modified slightly just to be safe and not overestimate the step-sizes as
+\begin{equation}
+\label{eq7.24}
+    h_2 = 0.9 h_1 \Bigg[ \dfrac{\varepsilon}{e(h_1)} \Bigg]^{1/5}
+\end{equation}
+Also to prohibit large fluctuations in values of $h$, following constrains are applied
+\begin{equation}
+    0.1 \leq \dfrac{h_2}{h_1} \leq 10
+\end{equation}
+$e(h)$ applies to a single integration step, that is, it is a measure of the local truncation error. The global truncation error is caused by the accumulation of the local errors. Because $e(h)$ is a conservative estimate of the actual error, setting $\varepsilon = \varepsilon_{global}$ is
+usually adequate. If the number of integration steps is very large, it is advisable to
+decrease $\varepsilon$ accordingly.
+\par
+Now finally writing the algorithm, consider $h$ as the trial value of the increment for the first integration step and $K_0$ being computed from scratch only there. We use
+\begin{equation}
+\label{eq7.24c}
+    (K_0)_{m+1} = \dfrac{h_{m+1}}{h_m} (K_6)_m
+\end{equation}
+ If $m$th step was accepted, and
+\begin{equation}
+\label{eq7.24d}
+    (K_0)_{m+1} = \dfrac{h_{m+1}}{h_m} (K_0)_m
+\end{equation}
+To prove (\ref{eq7.24c}), we let $i = 6$ in (\ref{eq7.18}), obtaining
+\begin{equation}
+    (K_6)_m = h_m F \Bigg[ x_m + A_6 h_m, y_m + \sum_{i=0}^5 B_{6i} (K_i)_m \Bigg]
+\end{equation}
+From table (\ref{tab:coeff}) we have last row of $B$-coefficients is identical to the $C$-coefficients
+(i.e., $B_{6i} - C_{i}$). Also as $A_6 = 1$. Therefore,
+\begin{equation}
+\label{eq7.24e}
+    (K_6)_m = h_m F \Bigg[ x_m + h_m, y_m + \sum_{i=0}^5 C_i (K_i)_m \Bigg]
+\end{equation}
+But according to (\ref{eq7.19a}), the fifth-order formula is
+\begin{equation}
+    y_{m+1} = y_m + m_{i=0}^6 C_i (K_i)_m
+\end{equation}
+Since $C_6 = 0$ from table (\ref{tab:coeff}), we can reduce the upper limit of the summation from 6
+to 5. Therefore, (\ref{eq7.24e}) becomes
+\begin{equation}
+    (K_6)_m = h_m F(x_{m+1}, y_{m+1}) = \dfrac{h_m}{h_{m+1}} (K_0)_{m+1}
+\end{equation}
+which completes the proof.
+The validity of (\ref{eq7.24d}) is rather obvious by inspection of the first equation of (\ref{eq7.18}). Because step $m+1$ repeats step $m$ with a different value of $h$, we have
+\begin{equation}
+    (K_0)_m = h_m F(x_m, y_m) \hspace{1cm} (K_0)_{m+1} = h_{m+1} F(x_m, y_m)
+\end{equation}
+which leads directly to (\ref{eq7.24d}).
+\par
+This algorithm is coded in accompanying Python file.
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+\begin{table}[]
+\centering
+\caption{Dormand-Prince coefficients.}
+\vspace{1cm}
+\label{tab:coeff}
+\setlength\extrarowheight{20pt}
+
+\begin{tabular}{@{}cccccccccc@{}}
+\toprule
+$i$ & $A_i$ & \multicolumn{6}{c}{$B_{ij}$} & $C_i$ & $D_i$ \\ \midrule
+0 & $-$  &  $-$   &  $-$  &  $-$  & $-$   &  $-$ &  $-$ & $\dfrac{35}{384}$  & $\dfrac{5179}{57600}$   \\
+1 & $\dfrac{1}{5}$   &  $\dfrac{1}{5}$   & $-$  & $-$   & $-$   & $-$ & $-$ &  0    & 0   \\
+2 & $\dfrac{3}{10}$   &  $\dfrac{3}{40}$   &  $\dfrac{9}{40}$  &  $-$ &  $-$  &  $-$  & $-$ &  $\dfrac{500}{1113}$  &  $\dfrac{7571}{16695}$  \\
+3 & $\dfrac{4}{5}$   &  $\dfrac{44}{45}$   &  $-\dfrac{56}{15}$  &  $\dfrac{32}{9}$  &  $-$  &  $-$ & $-$ & $\dfrac{125}{192}$  & $\dfrac{393}{640}$   \\
+4 & $\dfrac{8}{9}$   &  $\dfrac{19372}{6561}$   & $-\dfrac{25360}{2187}$   & $\dfrac{64448}{6561}$    & $-\dfrac{212}{729}$   & $-$ & $-$ & $-\dfrac{2187}{6784}$   &  $-\dfrac{92097}{339200}$  \\
+5 & 1   & $\dfrac{9017}{3168}$    & $-\dfrac{355}{33}$   & $\dfrac{46732}{5247}$    & $\dfrac{49}{176}$   & $-\dfrac{5103}{18656}$    & $-$ & $\dfrac{11}{84}$   & $\dfrac{187}{2100}$    \\
+6 & 1   &  $\dfrac{35}{384}$   & 0    &  $\dfrac{500}{1113}$  &  $\dfrac{125}{192}$  &  $-\dfrac{2187}{6784}$  & $\dfrac{11}{84}$   &   0 & $\dfrac{1}{40}$\\ \bottomrule
+\end{tabular}
+\end{table}
+
+\section{Problem Statement}
+Now that we have formulated and coded the algorithm we can consider an application in a real-world physical problem. Consider the aerodynamic drag force acting on a certain object in free fall
+\begin{equation}
+    F_D = a v^2 e^{-by}
+\end{equation}
+where $v =$ velocity of object in m/s; $y =$ elevation of the object in metres; $a = \SI{7.45}{\kilogram \per \metre}$; $b = \SI{10.53e-5}{\per \metre}$. The exponential term accounts for the change of air density with elevation. The differential equation describing the fall is
+\begin{equation}
+    m \Ddot{y} = -mg + F_D
+\end{equation}
+where $g = \SI{9.80665}{\metre \per \second \squared}$ and $m = \SI{114}{\kilogram}$ is the mass of the object. Taking the initial condition that the object was released from elevation of 9 km, let us use our algorithm to find elevation and speed after a 10 second fall.
+\par
+The differential equation and the initial conditions are
+\begin{equation}
+    \begin{split}
+        \Ddot{y}
+        &= -g + \dfrac{a}{m} \Dot{y}^2 exp(-by) \\
+        &= -9.80665 + \dfrac{7.45}{114} \Dot{y}^2 exp(-10.53 \times 10^{-5} y)
+    \end{split}
+\end{equation}
+with $y(0) = \SI{9000}{\metre}$ and $\Dot{y}(0) = 0$
+Let us define $\Dot{y}$ as a vector:
+\begin{equation}
+    \Dot{y} = 
+    \begin{bmatrix}
+        \Dot{y}_0 \\
+        \Dot{y}_1 \\
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        y_1 \\
+        -9.80665 + (65.351 \times 10^{-3})y_1^2 exp(-10.53 \times 10^{-5}y_0)
+    \end{bmatrix}
+\end{equation}
+and
+\begin{equation}
+    y(0) = 
+    \begin{bmatrix}
+        9000 m \\
+        0
+    \end{bmatrix}
+\end{equation}
+
+The driver program for this problem is written in the accompanying Jupyter notebook. We specified a per-step error tolerance of $10^{-2}$ in \texttt{integrate}.  Considering the magnitude of $y$, this should be enough for five decimal point accuracy in the solution.
+\par
+The first step was carried out with the prescribed trial value $h = \SI{0.5}{\second}$. Apparently
+the error was well within the tolerance, so that the step was accepted. Subsequent
+step sizes, determined from (\ref{eq7.24}), were considerably larger. Inspecting the output, we see that at $t = \SI{10}{\second}$ the object is moving with the speed $v = -\Dot{y} = \SI{19.52}{\second}$ at an elevation of $y = \SI{8831}{\metre}$.
+\end{document}
