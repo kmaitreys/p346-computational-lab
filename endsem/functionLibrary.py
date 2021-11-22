@@ -27,13 +27,14 @@ def matrixProduct(L, M):
     if len(L[0]) != len(M): #ensuring the plausiblity
         print("Matrix multiplication not possible.")
     else:
-        print("Multiplying the two matrices: ")
+        #print("Multiplying the two matrices: ")
         P=[[0 for i in range(len(M[0]))] for j in range(len(L))] #initializing empty matrix
         for i in range(len(L)): #iterating rows
             for j in range(len(M[0])): #iterating columns
                 for k in range(len(M)): #iterating elements and substituing them
                     P[i][j] = P[i][j] + (L[i][k] * M[k][j])
-        matrixDisplay(P)
+        #matrixDisplay(P)
+    return P
 
 ##################################################################################################
 ##################################################################################################
@@ -112,6 +113,41 @@ def determinant(a):
 
 
 #calculating inverse
+def eliminate_alt(r1, r2, col, target=0):
+    fac = (r2[col]-target) / r1[col]
+    for i in range(len(r2)):
+        r2[i] -= fac * r1[i]
+
+
+def gauss_alt(a):
+    for i in range(len(a)):
+        if a[i][i] == 0:
+            for j in range(i+1, len(a)):
+                if a[i][j] != 0:
+                    a[i], a[j] = a[j], a[i]
+                    break
+            else:
+                raise ValueError("Matrix is not invertible")
+        for j in range(i+1, len(a)):
+            eliminate_alt(a[i], a[j], i)
+    for i in range(len(a)-1, -1, -1):
+        for j in range(i-1, -1, -1):
+            eliminate_alt(a[i], a[j], i)
+    for i in range(len(a)):
+        eliminate_alt(a[i], a[i], i, target=1)
+    return a
+
+
+def polyfit_inverse(a):
+    tmp = [[] for _ in a]
+    for i,row in enumerate(a):
+        assert len(row) == len(a)
+        tmp[i].extend(row + [0]*i + [1] + [0]*(len(a)-i-1))
+    gauss_alt(tmp)
+    ret = []
+    for i in range(len(tmp)):
+        ret.append(tmp[i][len(tmp[i])//2:])
+    return ret
 
 
 def inverse(a):
@@ -143,10 +179,11 @@ def inverse(a):
                 factor = a[i][k]
                 for j in range(k, 2*n): #index the columns for subtraction
                     a[i][j] -= factor * a[k][j]
-    for i in range(len(a)): #displaying the matrix
-        for j in range(n, len(a[0])):
-            print("{:.2f}".format(a[i][j]), end = " ") #printing upto 2 places in decimal. 
-        print()
+    #for i in range(len(a)): #displaying the matrix
+        #for j in range(n, len(a[0])):
+            #print("{:.2f}".format(a[i][j]), end = " ") #printing upto 2 places in decimal. 
+        #print()
+    return a
 
 
 #################################################################################################
